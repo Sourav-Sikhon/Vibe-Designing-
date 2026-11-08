@@ -149,7 +149,7 @@ a {
 
 /* ---------- type ---------- */
 .display {
-  font-size: clamp(2.75rem, 6.1vw, 6rem);
+  font-size: clamp(2.75rem, 5.3vw, 5.25rem);
   line-height: 0.98;
   letter-spacing: -0.04em;
   font-weight: 500;
@@ -335,7 +335,7 @@ a {
 
 .hero-scrim {
   background:
-    linear-gradient(90deg, rgb(248 249 247 / 0.92) 0%, rgb(248 249 247 / 0.55) 26%, rgb(248 249 247 / 0) 42%),
+    linear-gradient(90deg, rgb(248 249 247 / 0.96) 0%, rgb(248 249 247 / 0.7) 30%, rgb(248 249 247 / 0) 50%),
     linear-gradient(0deg, rgb(248 249 247 / 0.7) 0%, rgb(248 249 247 / 0) 14%);
 }
 @media (max-width: 1023px) {

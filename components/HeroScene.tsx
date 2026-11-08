@@ -55,6 +55,9 @@ export default function HeroScene() {
       kit.camera.aspect = w / h;
       // keep the subject framed on narrow / tall viewports
       kit.camera.fov = w / h < 0.9 ? 44 : w / h < 1.5 ? 32 : 26;
+      // desktop: slide the image right so the machines own the right half and the copy has clear paper
+      if (mobile) kit.camera.clearViewOffset();
+      else kit.camera.setViewOffset(w, h, -w * 0.15, 0, w, h);
       kit.camera.updateProjectionMatrix();
     };
     size();
@@ -82,7 +85,9 @@ export default function HeroScene() {
         tmp.project(kit.camera);
         const x = (tmp.x * 0.5 + 0.5) * w;
         const y = (-tmp.y * 0.5 + 0.5) * h;
-        const lx = x + c.dx;
+        // flip the label to the other side of its anchor when it would run off the right edge
+        const dx = c.dx > 0 && x + c.dx + label.offsetWidth > w - 16 ? -c.dx : c.dx;
+        const lx = x + dx;
         const ly = y + c.dy;
         dot.setAttribute("cx", String(x));
         dot.setAttribute("cy", String(y));
@@ -90,7 +95,7 @@ export default function HeroScene() {
         line.setAttribute("y1", String(y));
         line.setAttribute("x2", String(lx));
         line.setAttribute("y2", String(ly));
-        const alignRight = c.dx < 0;
+        const alignRight = dx < 0;
         label.style.transform = `translate(${alignRight ? lx - label.offsetWidth : lx}px, ${
           c.dy < 0 ? ly - label.offsetHeight : ly
         }px)`;

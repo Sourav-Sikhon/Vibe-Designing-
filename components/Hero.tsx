@@ -50,6 +50,30 @@ function StatusPanel() {
   );
 }
 
+/* desktop: one quiet line at the foot of the sheet instead of a floating panel over the scene */
+function StatusStrip() {
+  return (
+    <div
+      role="group"
+      aria-label="Network status, demonstration data"
+      className="mono hidden items-center gap-x-6 lg:flex"
+      style={{ color: "var(--mute-aa)" }}
+    >
+      {STATUS.map((s) => (
+        <span key={s.k} className="flex items-center gap-2">
+          <span className="dot" aria-hidden="true" />
+          <span>
+            {s.k}: <span style={{ color: "var(--ink)" }}>{s.v}</span>
+          </span>
+        </span>
+      ))}
+      <span>
+        <Clock /> · Demo data
+      </span>
+    </div>
+  );
+}
+
 export default function Hero() {
   const reduce = useReducedMotion();
   const rise = (i: number) => ({
@@ -106,23 +130,13 @@ export default function Hero() {
               </li>
             ))}
           </ol>
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex items-center justify-between gap-6">
+            <StatusStrip />
             <TitleBlock no="A-01" name="Hero" scale="NTS" />
           </div>
         </div>
       </div>
 
-      <motion.aside
-        aria-label="Network status, demonstration data"
-        className="pointer-events-none absolute inset-x-0 top-[calc(var(--nav-h)+20px)] z-10 hidden lg:block"
-        {...rise(3)}
-      >
-        <div className="wrap flex justify-end">
-          <div className="pointer-events-auto w-[320px]">
-            <StatusPanel />
-          </div>
-        </div>
-      </motion.aside>
     </section>
   );
 }

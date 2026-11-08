@@ -90,7 +90,9 @@ export function buildHero(opts: { mobile: boolean; mapSize: number }): SceneKit 
   const scene = new THREE.Scene();
   const bg = new THREE.Color(C.paper);
   scene.background = bg;
-  scene.fog = new THREE.Fog(C.paper, 48, 120);
+  const desk = !opts.mobile;
+  // desktop: the copy owns the left half, so the stage is thinned out and washed back there
+  scene.fog = new THREE.Fog(C.paper, desk ? 34 : 48, desk ? 86 : 120);
 
   const camera = new THREE.PerspectiveCamera(opts.mobile ? 40 : 26, 1, 0.1, 160);
 
@@ -106,9 +108,9 @@ export function buildHero(opts: { mobile: boolean; mapSize: number }): SceneKit 
 
   // ---- far: architecture & hub (kept calm and low-contrast: it is the stage, not the subject)
   const hub = makeHub(15, 3.6, 5.6);
-  hub.position.set(7, 0, -12);
+  hub.position.set(desk ? 13 : 7, 0, desk ? -16 : -12);
   far.add(hub);
-  const towers: Array<[number, number, number, number, number, boolean]> = [
+  const allTowers: Array<[number, number, number, number, number, boolean]> = [
     [-14, -20, 3.2, 12, 3.4, false],
     [-8.5, -26, 3.6, 17, 3.4, true],
     [-2, -22, 3.0, 9, 3.0, false],
@@ -117,6 +119,7 @@ export function buildHero(opts: { mobile: boolean; mapSize: number }): SceneKit 
     [24, -17, 3.0, 8, 3.0, false],
     [8, -29, 3.4, 15, 3.4, true],
   ];
+  const towers = desk ? allTowers.filter((t) => t[0] >= 8) : allTowers;
   for (const [x, z, w, h, d, glass] of towers) {
     const t = makeTower(w, h, d, { glass });
     t.position.set(x, 0, z);
@@ -135,16 +138,16 @@ export function buildHero(opts: { mobile: boolean; mapSize: number }): SceneKit 
   const rail = box(60, 0.05, 0.05, mat.glow(C.lime, 0.9), 0, 1);
   rail.position.set(0, 7.36, 0.6);
   guide.add(rail);
-  guide.position.set(2, 0, -16);
+  guide.position.set(desk ? 26 : 2, 0, desk ? -18 : -16);
   far.add(guide);
   // ground the stage: darken matte architecture so the machines read against it
   far.traverse((o) => {
     const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
-    if (m && "color" in m && !(m.emissiveIntensity > 0)) m.color.multiplyScalar(0.7);
+    if (m && "color" in m && !(m.emissiveIntensity > 0)) m.color.multiplyScalar(desk ? 0.86 : 0.7);
   });
 
   // lamp posts along the road (mid)
-  for (const x of [-6, 1, 8, 15]) {
+  for (const x of desk ? [9, 16] : [-6, 1, 8, 15]) {
     const l = makeLamp(3.4);
     l.position.set(x, 0, -3.1);
     mid.add(l);
@@ -160,13 +163,15 @@ export function buildHero(opts: { mobile: boolean; mapSize: number }): SceneKit 
   vehicle.scale.setScalar(1.04);
   mid.add(vehicle);
   // extra parcel stacks near hub for depth
-  const crate = makeCrate(1, 0.6, 0.7);
-  crate.position.set(-1.5, 0.3, -5.6);
-  mid.add(crate);
-  const crate2 = makeCrate(0.9, 0.5, 0.6);
-  crate2.position.set(-0.3, 0.25, -5.8);
-  crate2.rotation.y = 0.3;
-  mid.add(crate2);
+  if (!desk) {
+    const crate = makeCrate(1, 0.6, 0.7);
+    crate.position.set(-1.5, 0.3, -5.6);
+    mid.add(crate);
+    const crate2 = makeCrate(0.9, 0.5, 0.6);
+    crate2.position.set(-0.3, 0.25, -5.8);
+    crate2.rotation.y = 0.3;
+    mid.add(crate2);
+  }
 
   // ---- near: robot on the pavement (lower right of the headline column)
   const pavement = box(70, 0.1, 3.4, mat.matte(C.concrete, 0.9), 0);
@@ -178,12 +183,14 @@ export function buildHero(opts: { mobile: boolean; mapSize: number }): SceneKit 
   robot.rotation.y = 0.35;
   robot.scale.setScalar(1.15);
   near.add(robot);
-  const t1 = makeTree(2.6, 1);
-  t1.position.set(-6.5, 0.1, 6.4);
-  near.add(t1);
-  const t2 = makeTree(2.1, 2);
-  t2.position.set(-4.4, 0.1, 6.8);
-  near.add(t2);
+  if (!desk) {
+    const t1 = makeTree(2.6, 1);
+    t1.position.set(-6.5, 0.1, 6.4);
+    near.add(t1);
+    const t2 = makeTree(2.1, 2);
+    t2.position.set(-4.4, 0.1, 6.8);
+    near.add(t2);
+  }
   const t3 = makeTree(2.4, 1);
   t3.position.set(14.5, 0.1, 6.4);
   near.add(t3);
